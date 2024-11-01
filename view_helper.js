@@ -225,7 +225,7 @@ function define_grouped_permission_checkboxes(id_prefix, which_groups = null) {
     // For each permissions group, create a row:
     for(let g of which_groups){
         let row = $(`<tr id="${id_prefix}_row_${g}">
-            <td id="${id_prefix}_${g}_name">${g}</td>
+            <td class="grouped_perms_row" id="${id_prefix}_${g}_name">${g}</td>
         </tr>`)
         for(let ace_type of ['allow', 'deny']) {
             row.append(`<td id="${id_prefix}_${g}_${ace_type}_cell">
@@ -513,6 +513,32 @@ function get_explanation_text(explanation) {
     ${ explanation.text_explanation ? `(${explanation.text_explanation})`  : '' }
     `
 }
+
+
+function extractPermission(text) {
+    return text.replace(/^permdialog_grouped_permissions_/, '').replace(/_name$/, '').replace(/_/g, ' ');
+}
+
+function getPermDesc(perm) {
+    switch(perm) {
+        case 'Read':
+            return 'Allows the user to view the contents of a file or folder. With read permissions, a user can open and see what’s inside, but they cannot make any changes.'
+        case 'Write':
+            return 'Grants permission to modify or overwrite a file or add new files to a folder. With write access, users can make changes to the contents but cannot delete files or execute programs unless they have additional permissions.'
+        case 'Read Execute':
+            return 'Combines read permissions with the ability to run or execute the file if it’s a program or script. This is common for applications where a user needs to see and run, but not modify, the file.'
+        case 'Modify':
+            return 'Allows users to read, write, and delete files. With modify permissions, a user has more control, as they can make and remove changes, but it’s still more restricted than full control.'
+        case 'Full control':
+            return 'Provides complete access to the file or folder. Users with full control can read, modify, delete, and change permissions for others, making it the most powerful permission level.'
+        case 'Special permissions':
+            return 'This is kind of a catch-all: if the permission settings for a given file & user can\'t be described by the 5 categories above then "Special Permissions" is also checked on screens which use these categories.'
+        default:
+            console.log("Unknown permission: " + perm);
+    }
+}
+
+
 
 //---- some universal HTML set-up so you don't have to do it in each wrapper.html ----
 $('#filestructure').css({

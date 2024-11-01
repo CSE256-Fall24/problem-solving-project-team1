@@ -72,3 +72,81 @@ $('.permbutton').click( function( e ) {
 
 // ---- Assign unique ids to everything that doesn't have an ID ----
 $('#html-loc').find('*').uniqueId() 
+
+
+let effective_perms = define_new_effective_permissions("eff_perms", true)
+$('#sidepanel').append(effective_perms)
+
+
+let user_select = define_new_user_select_field('user_select', 'Select User', function(selected_user) {
+    $('#eff_perms').attr('username', selected_user)
+    $('#eff_perms').attr('filepath', '/C/presentation_documents/important_file.txt')
+})
+$('#sidepanel').append(user_select)
+
+
+let dialog = define_new_dialog('explanation_dialog', 'Permission Explanation')
+
+$('.perm_info').click(function(){
+    let filePath = $('#eff_perms').attr('filepath')
+    let username = $('#eff_perms').attr('username')
+    if (username == null || filePath == null) {
+        dialog.dialog('open')
+        dialog.text('Please select a user first')
+    } else {
+        let permName = $(this).attr('permission_name')
+        let file_obj = path_to_file[filePath]
+        let user_obj = all_users[username]
+        let response_obj = allow_user_action(file_obj, user_obj, permName, true)
+        let explanation_text = get_explanation_text(response_obj)
+        dialog.dialog('open')
+        dialog.text(explanation_text)
+    }
+})
+
+
+$(document).ready(function() {
+    const explainTextbox = $('<div></div>')
+      .attr('id', 'hoverText')
+      .text('')
+      .css({
+        position: 'absolute',
+        display: 'none',
+        background: '#f0f0f0',  // Optional styling
+        padding: '5px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        zIndex: '1000',
+        fontSize: '12px',
+        color: '#666',
+        width: '300px'
+    });
+    $('body').append(explainTextbox);
+
+    // Show and update the textbox on mouse enter
+    $('.grouped_perms_row').on('mouseenter', function(event) {
+      // Update the textbox content based on the hovered element's ID
+      let permName = extractPermission($(this).attr('id'))
+      let explainTitle = '<h3 style="font-size: 20px;">' + permName + '</h3><br><br>'
+      explainTextbox.append(explainTitle)
+      let descText = getPermDesc(permName)
+      let explainText = '<p style="font-size: 16px;">' + descText + '</p>'
+      explainTextbox.append(explainText)
+      explainTextbox.show()
+      
+    });
+  
+    // Hide the textbox on mouse leave
+    $('.grouped_perms_row').on('mouseleave', function() {
+      explainTextbox.hide();
+      explainTextbox.html('');
+    });
+
+    $('.grouped_perms_row').on('mousemove', function(event) {
+        // Only update the position of the hover text element
+        explainTextbox.css({
+          top: event.pageY + 10,  // Offset for readability
+          left: event.pageX + 10
+        });
+      });
+  });
