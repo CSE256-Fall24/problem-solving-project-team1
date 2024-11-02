@@ -73,6 +73,26 @@ $('.oi-lock-unlocked').each(function() {
     emitter.dispatchEvent(new CustomEvent('userEvent', { detail: new ClickEntry(ActionEnum.CLICK, (e.clientX + window.pageXOffset), (e.clientY + window.pageYOffset), e.target.id,new Date().getTime()) }))
 });
 
+// ---- Checkbox Interaction Logic for Deny/Allow ----
+
+// Listen for changes on all Deny checkboxes using event delegation
+$(document).on('change', 'input[type="checkbox"][ptype="deny"]', function() {
+    // Check if this Deny checkbox is checked
+    if ($(this).is(':checked')) {
+        // Find the corresponding Allow checkbox and uncheck it
+        let allowCheckboxId = $(this).attr('id').replace('deny', 'allow'); // Adjust if IDs are structured differently
+        $('#' + allowCheckboxId).prop('checked', false);
+    }
+});
+
+// Listen for changes on all Allow checkboxes using event delegation
+$(document).on('change', 'input[type="checkbox"][ptype="allow"]', function() {
+    if ($(this).is(':checked')) {
+        let denyCheckboxId = $(this).attr('id').replace('allow', 'deny');
+        $('#' + denyCheckboxId).prop('checked', false);
+    }
+});
+
 
 // ---- Assign unique ids to everything that doesn't have an ID ----
 $('#html-loc').find('*').uniqueId() 
