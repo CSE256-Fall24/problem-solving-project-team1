@@ -62,7 +62,11 @@ $('.permbutton').click( function( e ) {
     perm_dialog.attr('filepath', path)
     perm_dialog.dialog('open')
     //open_permissions_dialog(path)
-
+// Change all lock icons to "Edit Permissions" text
+$('.oi-lock-unlocked').each(function() {
+    $(this).text('Edit Permissions');
+    $(this).removeClass('oi oi-lock-unlocked'); // Optional: remove icon classes for styling
+});
     // Deal with the fact that folders try to collapse/expand when you click on their permissions button:
     e.stopPropagation() // don't propagate button click to element underneath it (e.g. folder accordion)
     // Emit a click for logging purposes:
