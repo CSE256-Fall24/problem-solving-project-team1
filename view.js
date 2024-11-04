@@ -206,17 +206,18 @@ user_select.hide();
 $('.file').click(function(event) {
     let filepath = $(this).attr('id').replace('_div', '');
     $('#eff_perms').attr('filepath', filepath);
-    $('.file').css('color','');
-    $(this).css('color','blue');
+    $('.file').removeClass('selected')
+    $(this).addClass('selected')
     $('#eff_perms').show();
     user_select.show()
     console.log(filepath);
     event.stopPropagation();
 })
 
+
 $(document).click(function(event) {
     if ($(event.target).is('body') || $(event.target).is('html')) {
-        $('.file').css('color','');
+        $('.file').removeClass('selected')
         $('#eff_perms').hide();
         user_select.hide();
         $('#eff_perms').removeAttr('filepath');
