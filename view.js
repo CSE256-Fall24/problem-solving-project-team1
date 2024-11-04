@@ -1,5 +1,101 @@
 // ---- Define your dialogs  and panels here ----
 
+// tutorial dialog 
+$(document).ready(function () {
+    // Array of dialog pages
+    const pages = [
+        `<p>Hi! On this page, you'll be given a task, which asks you to edit file permissions for specified users. Here is a brief overview of how permissions are determined for a given file: </p>
+        <br></br>
+        <ul> 
+            <li>Each file/folder has direct permission applied to them. These permissions <strong> take precedence </strong> over inherited permissions</li>
+            <li> Direct permissions that <strong> "deny" </strong> access always take precedence over <strong> "allow" </strong> </li>
+            <li>If there are no direct permission applied for a particular action (ie. Read), the file will <strong> inherit the permissions of its parent</strong> (the folder it sits in). </li>
+            <li> The owner of a file/folder always has <strong> full control </strong> of a file. </li>
+            <li> A user can be a part of a <strong>"group"</strong>. Unless specified for the individual user, users also inherit permissions set for the group. </li> 
+
+        </ul>
+        `
+        ,
+        `<p>Phew that was a lot!</p> <br></br>
+        <p>To help you get started, select a file/folder of interest in the <strong>right-handside panel</strong> .</p> <br></br>
+        <p> Then, select <strong>the user you want to view permissions for</strong>.</p> <br></br>
+        <p> The panel will show you all the permissions that user has, for that file. <strong> click on the "i" button to see why the user has the given permission </strong></p>`
+       ,
+       
+        `<p><strong>Some rules of thumbs: </strong></p>
+        <br></br>
+        <ul>
+            <li> Direct permissions override any permissions from parent folders</li> <br></br>
+            <li> Grayed out permissions (within the "edit permission" window) means the permission is inherited from a parent.</li> <br/>
+            <li> If a permission is "allowed" due to inheritance, applying "deny" to the file of interest directly will override the "allow".</li>
+        </ul>
+        `
+    ];
+    
+    let currentPage = 0;  // Initialize to the first page
+
+    // Function to update dialog content based on current page
+    function updateDialogContent() {
+        $("#welcome-dialog-content").html(pages[currentPage]);
+
+        // Update button states based on the current page
+        $("#back-button").toggle(currentPage > 0);  // Hide Back on first page
+        $("#next-button").toggle(currentPage < pages.length - 1); // Hide Next on last page
+        $("#finish-button").toggle(currentPage === pages.length - 1); // Show Finish on last page
+    }
+
+    // Create the dialog HTML structure dynamically
+    const dialogContent = `
+        <div id="welcome-dialog" title="Welcome">
+            <div id="welcome-dialog-content"></div>
+        </div>
+    `;
+    $("body").append(dialogContent);
+
+    // Initialize the dialog
+    $("#welcome-dialog").dialog({
+        autoOpen: true,
+        modal: true,
+        width: 500,
+        position: {
+            my: "center", 
+            at: "top"
+        },
+        buttons: [
+            {
+                id: "back-button",
+                text: "Back",
+                click: function () {
+                    if (currentPage > 0) {
+                        currentPage--;
+                        updateDialogContent();
+                    }
+                }
+            },
+            {
+                id: "next-button",
+                text: "Next",
+                click: function () {
+                    if (currentPage < pages.length - 1) {
+                        currentPage++;
+                        updateDialogContent();
+                    }
+                }
+            },
+            {
+                id: "finish-button",
+                text: "Finish",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }
+        ]
+    });
+
+    // Initialize dialog content
+    updateDialogContent();  // Show the first page's content
+});
+
 
 
 // ---- Display file structure ----
