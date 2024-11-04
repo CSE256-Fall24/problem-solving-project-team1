@@ -17,9 +17,9 @@ $(document).ready(function () {
         `
         ,
         `<p>Phew that was a lot!</p> <br></br>
-        <p>To help you get started, select a file/folder of interest in the <strong>right-handside panel</strong> .</p> <br></br>
+        <p>To help you get started, <strong>select a file/folder of interest by clicking on the file/folder. </strong> </p> <br></br>
         <p> Then, select <strong>the user you want to view permissions for</strong>.</p> <br></br>
-        <p> The panel will show you all the permissions that user has, for that file. <strong> click on the "i" button to see why the user has the given permission </strong></p>`
+        <p> The panel will show you all the permissions that user has, for the selected file. <strong> click on the "i" button to see why the user has the given permission </strong></p>`
        ,
        
         `<p><strong>Some rules of thumbs: </strong></p>
