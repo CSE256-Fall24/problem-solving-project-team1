@@ -100,13 +100,34 @@ $('#html-loc').find('*').uniqueId()
 
 let effective_perms = define_new_effective_permissions("eff_perms", true)
 $('#sidepanel').append(effective_perms)
-
-
 let user_select = define_new_user_select_field('user_select', 'Select User', function(selected_user) {
     $('#eff_perms').attr('username', selected_user)
-    $('#eff_perms').attr('filepath', '/C/presentation_documents/important_file.txt')
 })
 $('#sidepanel').append(user_select)
+effective_perms.hide();
+user_select.hide();
+
+$('.file').click(function(event) {
+    let filepath = $(this).attr('id').replace('_div', '');
+    $('#eff_perms').attr('filepath', filepath);
+    $('.file').css('color','');
+    $(this).css('color','blue');
+    $('#eff_perms').show();
+    user_select.show()
+    console.log(filepath);
+    event.stopPropagation();
+})
+
+$(document).click(function(event) {
+    if ($(event.target).is('body') || $(event.target).is('html')) {
+        $('.file').css('color','');
+        $('#eff_perms').hide();
+        user_select.hide();
+        $('#eff_perms').removeAttr('filepath');
+        console.log("Clicked elsewhere");
+    }
+});
+
 
 
 let dialog = define_new_dialog('explanation_dialog', 'Permission Explanation')
