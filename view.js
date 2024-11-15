@@ -247,6 +247,7 @@ $('.perm_info').click(function(){
 })
 
 
+
 $(document).ready(function() {
     const explainTextbox = $('<div></div>')
       .attr('id', 'hoverText')
@@ -292,3 +293,49 @@ $(document).ready(function() {
         });
       });
   });
+$(document).ready(function() {
+    const explainTextbox = $('<div></div>')
+      .attr('id', 'hoverText')
+      .text('')
+      .css({
+        position: 'absolute',
+        display: 'none',
+        background: '#f0f0f0',
+        padding: '5px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        zIndex: '1000',
+        fontSize: '12px',
+        color: '#666',
+        width: '300px'
+    });
+    $('body').append(explainTextbox);
+
+    // Show and update the textbox on mouse enter
+    $('.groupcheckbox').on('mouseenter', function(event) {
+      // Extract permission name based on the closest row ID or the group attribute
+      let permName = extractPermission($(this).closest('.grouped_perms_row').attr('id') || $(this).attr('group'));
+      let explainTitle = '<h3 style="font-size: 20px;">' + permName + '</h3><br><br>';
+      explainTextbox.append(explainTitle);
+      
+      let descText = getPermDesc(permName); // Custom function to get permission description
+      let explainText = '<p style="font-size: 16px;">' + "inherit from parent" + '</p>';
+      explainTextbox.append(explainText);
+      
+      explainTextbox.show();
+    });
+
+    // Hide the textbox on mouse leave
+    $('.groupcheckbox').on('mouseleave', function() {
+      explainTextbox.hide();
+      explainTextbox.html('');
+    });
+
+    // Update the textbox position on mouse move
+    $('.groupcheckbox').on('mousemove', function(event) {
+        explainTextbox.css({
+          top: event.pageY + 10,
+          left: event.pageX + 10
+        });
+    });
+});
