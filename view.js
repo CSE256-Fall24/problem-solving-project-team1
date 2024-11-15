@@ -37,12 +37,13 @@ $(document).ready(function () {
     // Function to update dialog content based on current page
     function updateDialogContent() {
         $("#welcome-dialog-content").html(pages[currentPage]);
-
+        
         // Update button states based on the current page
         $("#back-button").toggle(currentPage > 0);  // Hide Back on first page
         $("#next-button").toggle(currentPage < pages.length - 1); // Hide Next on last page
         $("#finish-button").toggle(currentPage === pages.length - 1); // Show Finish on last page
     }
+
 
     // Create the dialog HTML structure dynamically
     const dialogContent = `
@@ -92,6 +93,18 @@ $(document).ready(function () {
         ]
     });
 
+    const tutorial_button =  `<button id = "tutorial_button" > Get Help! </button>`;
+
+    $("body").append(tutorial_button);
+    $("#tutorial_button").on("click", function() {
+        currentPage = 0;
+        updateDialogContent();
+       $("#welcome-dialog").dialog("open");
+      });
+
+    $("#perm-dialog-ok-button").on("click", function() {
+        
+    });
     // Initialize dialog content
     updateDialogContent();  // Show the first page's content
 });
