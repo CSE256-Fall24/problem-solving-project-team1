@@ -94,6 +94,31 @@ $(document).ready(function () {
     });
 
     const tutorial_button =  `<button id = "tutorial_button" > Get Help! </button>`;
+    
+    //popup for when user clicks "ok" in the permissions panel
+    // const changesSaved = `
+    //     <div id="confirmation-dialog">
+    //         <p> Changes Saved </p>
+    //     </div>
+    // `;
+    // $("body").append(changesSaved);
+    // $("#confirmation-dialog").dialog({
+    //     modal: true,
+    //     width: 300,
+    //     position: {
+    //         my: "center", 
+    //         at: "top"
+    //     },
+    //     buttons: [
+    //         {
+    //             id: "confirmation-button",
+    //             text: "ok",
+    //             click: function () {
+    //                 $(this).dialog("close");
+    //             }
+    //         }
+    //     ]
+    // });
 
     $("body").append(tutorial_button);
     $("#tutorial_button").on("click", function() {
@@ -103,7 +128,7 @@ $(document).ready(function () {
       });
 
     $("#perm-dialog-ok-button").on("click", function() {
-        
+        $("#confirmation-dialog").dialog("open");
     });
     // Initialize dialog content
     updateDialogContent();  // Show the first page's content
@@ -196,7 +221,7 @@ $(document).on('change', 'input[type="checkbox"][ptype="deny"]', function() {
 
 // Listen for changes on all Allow checkboxes using event delegation
 $(document).on('change', 'input[type="checkbox"][ptype="allow"]', function() {
-    if ($(this).is(':checked')) {
+    if ($(this).prop(':checked')) {
         let denyCheckboxId = $(this).attr('id').replace('allow', 'deny');
         $('#' + denyCheckboxId).prop('checked', false);
     }
@@ -327,15 +352,14 @@ $(document).ready(function() {
     // Show and update the textbox on mouse enter
     $('.groupcheckbox').on('mouseenter', function(event) {
       // Extract permission name based on the closest row ID or the group attribute
-      let permName = extractPermission($(this).closest('.grouped_perms_row').attr('id') || $(this).attr('group'));
-      let explainTitle = '<h3 style="font-size: 20px;">' + permName + '</h3><br><br>';
-      explainTextbox.append(explainTitle);
+      console.log($(this));
+      if ($(this).prop('disabled')) { 
+        console.log("is disabled");
+        let explainText = '<p style="font-size: 16px;">' + "this permission is inherited from a parent" + '</p>';
+        explainTextbox.append(explainText);
+        explainTextbox.show();
+      }
       
-      let descText = getPermDesc(permName); // Custom function to get permission description
-      let explainText = '<p style="font-size: 16px;">' + "inherit from parent" + '</p>';
-      explainTextbox.append(explainText);
-      
-      explainTextbox.show();
     });
 
     // Hide the textbox on mouse leave
