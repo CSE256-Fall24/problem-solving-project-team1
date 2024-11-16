@@ -232,7 +232,12 @@ $(document).on('change', 'input[type="checkbox"][ptype="allow"]', function() {
 $('#html-loc').find('*').uniqueId() 
 
 
+// MANUAL EDITS FROM HERE =========================
+// ================================================
+
+// Effective Permissions
 let effective_perms = define_new_effective_permissions("eff_perms", true)
+// let effective_perms = define_new_collected_permissions("eff_perms", true)
 $('#sidepanel').append(effective_perms)
 let user_select = define_new_user_select_field('user_select', 'Select User', function(selected_user) {
     $('#eff_perms').attr('username', selected_user)
@@ -241,6 +246,7 @@ $('#sidepanel').append(user_select)
 effective_perms.hide();
 user_select.hide();
 
+// Modify file that the effective permissions sidebar points to
 $('.file').click(function(event) {
     let filepath = $(this).attr('id').replace('_div', '');
     $('#eff_perms').attr('filepath', filepath);
@@ -252,7 +258,7 @@ $('.file').click(function(event) {
     event.stopPropagation();
 })
 
-
+// Un-highlight selected file
 $(document).click(function(event) {
     if ($(event.target).is('body') || $(event.target).is('html')) {
         $('.file').removeClass('selected')
@@ -278,7 +284,9 @@ $('.perm_info').click(function(){
         let file_obj = path_to_file[filePath]
         let user_obj = all_users[username]
         let response_obj = allow_user_action(file_obj, user_obj, permName, true)
+        console.log("Response:", response_obj)
         let explanation_text = get_explanation_text(response_obj)
+        console.log("Explanation:", explanation_text)
         dialog.dialog('open')
         dialog.text(explanation_text)
     }
