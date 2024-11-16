@@ -51,3 +51,13 @@
 .no-close .ui-dialog-titlebar-close {
     display: none;
 }
+
+#tutorial_button {
+    background-color:#007fff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 30px; 
+  }

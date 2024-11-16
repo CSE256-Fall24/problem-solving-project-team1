@@ -37,12 +37,13 @@ $(document).ready(function () {
     // Function to update dialog content based on current page
     function updateDialogContent() {
         $("#welcome-dialog-content").html(pages[currentPage]);
-
+        
         // Update button states based on the current page
         $("#back-button").toggle(currentPage > 0);  // Hide Back on first page
         $("#next-button").toggle(currentPage < pages.length - 1); // Hide Next on last page
         $("#finish-button").toggle(currentPage === pages.length - 1); // Show Finish on last page
     }
+
 
     // Create the dialog HTML structure dynamically
     const dialogContent = `
@@ -92,6 +93,43 @@ $(document).ready(function () {
         ]
     });
 
+    const tutorial_button =  `<button id = "tutorial_button" > Get Help! </button>`;
+    
+    //popup for when user clicks "ok" in the permissions panel
+    // const changesSaved = `
+    //     <div id="confirmation-dialog">
+    //         <p> Changes Saved </p>
+    //     </div>
+    // `;
+    // $("body").append(changesSaved);
+    // $("#confirmation-dialog").dialog({
+    //     modal: true,
+    //     width: 300,
+    //     position: {
+    //         my: "center", 
+    //         at: "top"
+    //     },
+    //     buttons: [
+    //         {
+    //             id: "confirmation-button",
+    //             text: "ok",
+    //             click: function () {
+    //                 $(this).dialog("close");
+    //             }
+    //         }
+    //     ]
+    // });
+
+    $("body").append(tutorial_button);
+    $("#tutorial_button").on("click", function() {
+        currentPage = 0;
+        updateDialogContent();
+       $("#welcome-dialog").dialog("open");
+      });
+
+    $("#perm-dialog-ok-button").on("click", function() {
+        $("#confirmation-dialog").dialog("open");
+    });
     // Initialize dialog content
     updateDialogContent();  // Show the first page's content
 });
@@ -183,7 +221,7 @@ $(document).on('change', 'input[type="checkbox"][ptype="deny"]', function() {
 
 // Listen for changes on all Allow checkboxes using event delegation
 $(document).on('change', 'input[type="checkbox"][ptype="allow"]', function() {
-    if ($(this).is(':checked')) {
+    if ($(this).prop(':checked')) {
         let denyCheckboxId = $(this).attr('id').replace('allow', 'deny');
         $('#' + denyCheckboxId).prop('checked', false);
     }
@@ -194,7 +232,12 @@ $(document).on('change', 'input[type="checkbox"][ptype="allow"]', function() {
 $('#html-loc').find('*').uniqueId() 
 
 
+// MANUAL EDITS FROM HERE =========================
+// ================================================
+
+// Effective Permissions
 let effective_perms = define_new_effective_permissions("eff_perms", true)
+// let effective_perms = define_new_collected_permissions("eff_perms", true)
 $('#sidepanel').append(effective_perms)
 let user_select = define_new_user_select_field('user_select', 'Select User', function(selected_user) {
     $('#eff_perms').attr('username', selected_user)
@@ -203,6 +246,7 @@ $('#sidepanel').append(user_select)
 effective_perms.hide();
 user_select.hide();
 
+// Modify file that the effective permissions sidebar points to
 $('.file').click(function(event) {
     let filepath = $(this).attr('id').replace('_div', '');
     $('#eff_perms').attr('filepath', filepath);
@@ -214,7 +258,7 @@ $('.file').click(function(event) {
     event.stopPropagation();
 })
 
-
+// Un-highlight selected file
 $(document).click(function(event) {
     if ($(event.target).is('body') || $(event.target).is('html')) {
         $('.file').removeClass('selected')
@@ -240,11 +284,14 @@ $('.perm_info').click(function(){
         let file_obj = path_to_file[filePath]
         let user_obj = all_users[username]
         let response_obj = allow_user_action(file_obj, user_obj, permName, true)
+        console.log("Response:", response_obj)
         let explanation_text = get_explanation_text(response_obj)
+        console.log("Explanation:", explanation_text)
         dialog.dialog('open')
         dialog.text(explanation_text)
     }
 })
+
 
 
 $(document).ready(function() {
@@ -292,3 +339,48 @@ $(document).ready(function() {
         });
       });
   });
+$(document).ready(function() {
+    const explainTextbox = $('<div></div>')
+      .attr('id', 'hoverText')
+      .text('')
+      .css({
+        position: 'absolute',
+        display: 'none',
+        background: '#f0f0f0',
+        padding: '5px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        zIndex: '1000',
+        fontSize: '12px',
+        color: '#666',
+        width: '300px'
+    });
+    $('body').append(explainTextbox);
+
+    // Show and update the textbox on mouse enter
+    $('.groupcheckbox').on('mouseenter', function(event) {
+      // Extract permission name based on the closest row ID or the group attribute
+      console.log($(this));
+      if ($(this).prop('disabled')) { 
+        console.log("is disabled");
+        let explainText = '<p style="font-size: 16px;">' + "this permission is inherited from a parent" + '</p>';
+        explainTextbox.append(explainText);
+        explainTextbox.show();
+      }
+      
+    });
+
+    // Hide the textbox on mouse leave
+    $('.groupcheckbox').on('mouseleave', function() {
+      explainTextbox.hide();
+      explainTextbox.html('');
+    });
+
+    // Update the textbox position on mouse move
+    $('.groupcheckbox').on('mousemove', function(event) {
+        explainTextbox.css({
+          top: event.pageY + 10,
+          left: event.pageX + 10
+        });
+    });
+});

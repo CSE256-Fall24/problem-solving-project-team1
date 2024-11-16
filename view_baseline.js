@@ -11,7 +11,7 @@ perm_dialog = define_new_dialog('permdialog', title='Permissions', options = {
     width: 400,
     buttons: {
         OK:{
-            text: "OK",
+            text: "Save",
             id: "perm-dialog-ok-button",
             click: function() {
                 $( this ).dialog( "close" );
@@ -343,7 +343,7 @@ let adv_contents = $(`#advdialog`).dialog({
     appendTo: "#html-loc",
     buttons: {
         OK: {
-            text: "OK",
+            text: "Save",
             id: "advanced-dialog-ok-button",
             click: function() {
                 $( this ).dialog( "close" );
@@ -506,7 +506,7 @@ let user_select_contents = $("#user_select_dialog").dialog({
             },
         },
         OK: {
-            text: "OK",
+            text: "Save",
             id: "user-select-ok-button",
             click: function() {
                 // populate field with user name (assume these are stored in attributes)
@@ -531,7 +531,7 @@ let perm_entry_dialog = $('#permentry').dialog({
     position: { my: "top", at: "top", of: $('#html-loc') },
     buttons: {
         OK: {
-            text: "OK",
+            text: "Save",
             id: "permission-entry-ok-button",
             click: function() {
                 open_advanced_dialog($('#advdialog').attr('filepath') )// redo advanced dialog (recalc permissions)
@@ -645,7 +645,7 @@ You will still get paid if you don't finish the task, but you have to try.
     },
     buttons:{
         OK: {
-            text: "OK",
+            text: "Save",
             id: "start-dialog-ok-button",
             click: function() {
                 $( this ).dialog( "close" );
