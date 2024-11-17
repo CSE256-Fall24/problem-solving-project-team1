@@ -1,6 +1,21 @@
 .file {
     padding: 8;
     border-bottom: 1px solid #dddddd;
+    color: black;
+}
+
+.file:hover {
+    color: lightblue; /* Hover color */
+}
+
+/* Hover color only applies when .selected is NOT present */
+.file:not(.selected):hover {
+    color: lightblue;
+}
+
+/* Clicked state color */
+.file.selected {
+    color: blue; /* Or your desired color for clicked files */
 }
 
 .section {
@@ -36,3 +51,13 @@
 .no-close .ui-dialog-titlebar-close {
     display: none;
 }
+
+#tutorial_button {
+    background-color:#007fff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 30px; 
+  }
