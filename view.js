@@ -236,8 +236,8 @@ $('#html-loc').find('*').uniqueId()
 // ================================================
 
 // Effective Permissions
-let effective_perms = define_new_effective_permissions("eff_perms", true)
-// let effective_perms = define_new_collected_permissions("eff_perms", true)
+// let effective_perms = define_new_effective_permissions("eff_perms", true)
+let effective_perms = define_new_collected_permissions("eff_perms", true)
 $('#sidepanel').append(effective_perms)
 let user_select = define_new_user_select_field('user_select', 'Select User', function(selected_user) {
     $('#eff_perms').attr('username', selected_user)
@@ -245,6 +245,21 @@ let user_select = define_new_user_select_field('user_select', 'Select User', fun
 $('#sidepanel').append(user_select)
 effective_perms.hide();
 user_select.hide();
+
+
+// Update the effective permissions when OK button is clicked
+$('#perm-dialog-ok-button').click(function() {
+    let old_eff_perms = $('#eff_perms');
+    let filepath = old_eff_perms.attr('filepath');
+    let username = old_eff_perms.attr('username');
+    old_eff_perms.remove();
+    // effective_perms = define_new_effective_permissions("eff_perms", true)
+    effective_perms = define_new_collected_permissions("eff_perms", true)
+    $('#user_select_line').before(effective_perms)
+    $('#eff_perms').attr('filepath', filepath).attr('username', username);
+})
+
+
 
 // Modify file that the effective permissions sidebar points to
 $('.file').click(function(event) {
@@ -265,7 +280,6 @@ $(document).click(function(event) {
         $('#eff_perms').hide();
         user_select.hide();
         $('#eff_perms').removeAttr('filepath');
-        console.log("Clicked elsewhere");
     }
 });
 

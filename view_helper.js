@@ -154,6 +154,7 @@ function define_new_effective_permissions(id_prefix, add_info_col = false, which
     if(which_permissions === null) {
         which_permissions = Object.values(permissions)
     }
+    console.log("Which permissions:", which_permissions)
     // add a row for each permission:
     for(let p of which_permissions) {
         let p_id = p.replace(/[ \/]/g, '_') //get jquery-readable id
@@ -206,42 +207,58 @@ function define_new_effective_permissions(id_prefix, add_info_col = false, which
 }
 
 
-function collect_permissions(collected_pid, username, filename) {
+function collect_permissions(collected_pid, filename, username) {
     let relevant_specific_permissions = []
     switch(collected_pid) {
-        case 'Read':
-            break
-        case 'Write':
-            break
         case 'Read Execute':
         case 'Read_Execute':
+            relevant_specific_permissions.push(...['traverse folder/execute file'])
+        case 'Read':
+            relevant_specific_permissions.push(...['read attributes','read extended attributes','list folder/read contents','read permissions'])
             break
+
+
         case 'Modify':
+            relevant_specific_permissions.push(...['delete subfolders and files','delete'])
+        case 'Write':
+            relevant_specific_permissions.push(...['create files/write data','create folders/append data','write attributes','write extended attributes'])
             break
         case 'Full Control':
         case 'Full_Control':
+            relevant_specific_permissions.push(...['traverse folder/execute file', 'list folder/read contents', 'read attributes', 'read extended attributes', 'create files/write data', 'create folders/append data', 'write attributes', 'write extended attributes', 'delete subfolders and files', 'delete', 'read permissions', 'change permissions', 'take ownership'])
             break
-        case 'Special Permissions':
-        case 'Special_Permissions':
-            break
+        // case 'Special Permissions':
+        // case 'Special_Permissions':
+        //     break
         default:
             console.log(`Unknown collected permission type: ${collected_pid}`)
             break
     }
-    allow_user_action(path_to_file[filepath], all_users[username], p)
+    // console.log("Relevant specific permissions:", relevant_specific_permissions)
+    // relevant_specific_permissions = relevant_specific_permissions.map(permission => permission.replace(/[ \/]/g, '_'));
+    for(let p of relevant_specific_permissions) {
+        if(!allow_user_action(filename, username, p)){
+            // console.log("user" + username + " does not have permission " + p + " on " + filename)
+            // console.log(filename)
+            return false
+        }
+    }
+    return true
+
 }
 
 function define_new_collected_permissions(id_prefix, add_info_col = true){
     // Set up the table:
     let effective_container = $(`<div id="${id_prefix}" class="ui-widget-content" style="overflow-y:scroll"></div>`)
-    collected_permissions = ['Read', 'Write', 'Read Execute', 'Modify', 'Full Control', 'Special Permissions']
+    // let collected_permissions = ['Read', 'Write', 'Read Execute', 'Modify', 'Full Control', 'Special Permissions']
+    let collected_permissions = ['Read', 'Write', 'Read Execute', 'Modify', 'Full Control']
     // add a row for each permission:
     for(let p of collected_permissions) {
         let p_id = p.replace(/[ \/]/g, '_') //get jquery-readable id
         let row = $(`
         <tr id="${id_prefix}_row_${p_id}" permission_name="${p}" permission_id="${p_id}">
             <td id="${id_prefix}_checkcell_${p_id}" class="effectivecheckcell" width="16px"></td>
-            <td id="${id_prefix}_name_${p_id}" class="effective_perm_name">${p}</td>
+            <td id="${id_prefix}_name_${p_id}" class="effective_perm_name grouped_perms_row" permission_name="${p}">${p}</td>
         </tr>
         `)
         // If we want to add an additional info column (which does nothing by default)
@@ -263,9 +280,10 @@ function define_new_collected_permissions(id_prefix, add_info_col = true){
             filepath && filepath.length > 0 && (filepath in path_to_file)) {
             //clear out the checkboxes:
             effective_container.find(`.effectivecheckcell`).empty()
-            let collected_permissions = {}
             // Set checkboxes correctly for given file and user:
+            // console.log("Collected permissions is ", collected_permissions)
             for(let p of collected_permissions) {
+                // console.log("Testing for permission ", p)
                 let p_id = p.replace(/[ \/]/g, '_') //get jquery-readable id
                 // if the actual model would allow an action with permission
                 // TODO: Modify this for collected allow_user_action
@@ -274,7 +292,11 @@ function define_new_collected_permissions(id_prefix, add_info_col = true){
                 //     let this_checkcell = effective_container.find(`#${id_prefix}_checkcell_${p_id}`)
                 //     this_checkcell.append(`<span id="${id_prefix}_checkbox_${p_id}" class="oi oi-check"/>`)
                 // }
-                
+                // console.log("Allow user action for ", p, 'is ', collect_permissions(p_id, path_to_file[filepath], all_users[username]))
+                if(collect_permissions(p_id, path_to_file[filepath], all_users[username])) {
+                    let this_checkcell = effective_container.find(`#${id_prefix}_checkcell_${p_id}`)
+                    this_checkcell.append(`<span id="${id_prefix}_checkbox_${p_id}" class="oi oi-check"/>`)
+                }
             }
         }
     }
@@ -598,7 +620,7 @@ function get_explanation_text(explanation) {
 
 
 function extractPermission(text) {
-    return text.replace(/^permdialog_grouped_permissions_/, '').replace(/_name$/, '').replace(/_/g, ' ');
+    return text.replace(/^permdialog_grouped_permissions_/, '').replace(/_name$/, '').replace(/_/g, ' ').replace("eff perms name ", "");
 }
 
 function getPermDesc(perm) {
@@ -612,6 +634,7 @@ function getPermDesc(perm) {
         case 'Modify':
             return 'Allows users to read, write, and delete files. With modify permissions, a user has more control, as they can make and remove changes, but it’s still more restricted than full control.'
         case 'Full control':
+        case 'Full Control':
             return 'Provides complete access to the file or folder. Users with full control can read, modify, delete, and change permissions for others, making it the most powerful permission level.'
         case 'Special permissions':
             return 'This is kind of a catch-all: if the permission settings for a given file & user can\'t be described by the 5 categories above then "Special Permissions" is also checked on screens which use these categories.'
