@@ -186,6 +186,13 @@ define_attribute_observer(perm_dialog, 'filepath', function(){
     //replace previous user list with the one we just generated:
     file_permission_users.empty()
     file_permission_users.append(file_user_list)
+    let file_obj = path_to_file[current_filepath]
+    if(file_obj.using_permission_inheritance) {
+        $('#adv_perm_inheritance').prop('checked', true)
+    }
+    else {
+        $('#adv_perm_inheritance').prop('checked', false)
+    }
 })
 
 
@@ -230,7 +237,7 @@ function open_permission_entry(file_path) {
 
     $('.perm_entry_checkcell').empty()
 
-    $(`#permentry`).dialog('open')
+    $(`#permentry`).dialog('open') 
 }
 
 // populate and open the "advanced" dialog for a given file
@@ -248,12 +255,12 @@ function open_advanced_dialog(file_path) {
     $('#adv_owner_user_list').empty()
     $(`.effectivecheckcell`).empty()
 
-    if(file_obj.using_permission_inheritance) {
-        $('#adv_perm_inheritance').prop('checked', true)
-    }
-    else {
-        $('#adv_perm_inheritance').prop('checked', false)
-    }
+    // if(file_obj.using_permission_inheritance) {
+    //     $('#adv_perm_inheritance').prop('checked', true)
+    // }
+    // else {
+    //     $('#adv_perm_inheritance').prop('checked', false)
+    // }
 
 
 
