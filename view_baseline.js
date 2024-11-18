@@ -7,8 +7,8 @@ show_starter_dialogs = false // set this to "false" to disable the survey and 3-
 // Make permissions dialog:
 perm_dialog = define_new_dialog('permdialog', title='Permissions', options = {
     // The following are standard jquery-ui options. See https://jqueryui.com/dialog/
-    height: 500,
-    width: 400,
+    'min-height': 'fit-content',
+    width: '50vw',
     buttons: {
         OK:{
             text: "Save",
@@ -59,7 +59,8 @@ file_permission_users = define_single_select_list('permdialog_file_user_list', f
     grouped_permissions.attr('username', selected_user)
 })
 file_permission_users.css({
-    'height':'80px',
+    'height':'fit-content',
+    'margin' : '5px 0px 15px 0px',
 })
 
 // Make button to add a new user to the list:
@@ -70,7 +71,7 @@ perm_add_user_select = define_new_user_select_field('perm_add_user', 'Add User',
         let expected_user_elem_id = `permdialog_file_user_${selected_user}`
         if( file_permission_users.find(`#${expected_user_elem_id}`).length === 0 ) { // if such a user element doesn't already exist
             new_user_elem = make_user_elem('permdialog_file_user', selected_user)
-            file_permission_users.append(new_user_elem)
+            file_permission_users.prepend(new_user_elem)
         }
     }    
 })
@@ -337,7 +338,7 @@ $( "#advtabs" ).tabs({
 let adv_contents = $(`#advdialog`).dialog({
     position: { my: "top", at: "top", of: $('#html-loc') },
     width: 700,
-    height: 450,
+    height: 'auto',
     modal: true,
     autoOpen: false,
     appendTo: "#html-loc",

@@ -4,19 +4,16 @@
     color: black;
 }
 
-.file:hover {
-    color: lightblue; /* Hover color */
-}
-
 /* Hover color only applies when .selected is NOT present */
+/* .file:hover {
+    color: lightblue;
+}
 .file:not(.selected):hover {
     color: lightblue;
 }
-
-/* Clicked state color */
 .file.selected {
-    color: blue; /* Or your desired color for clicked files */
-}
+    color: blue;
+} */
 
 .section {
     margin-bottom: 5px;

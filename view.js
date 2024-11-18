@@ -248,16 +248,37 @@ $('#html-loc').find('*').uniqueId()
 // MANUAL EDITS FROM HERE =========================
 // ================================================
 
+$('#sidepanel').css({
+    'margin': '5px 0px 0px 5px',
+})
+
 // Effective Permissions
 // let effective_perms = define_new_effective_permissions("eff_perms", true)
 let effective_perms = define_new_collected_permissions("eff_perms", true)
 $('#sidepanel').append(effective_perms)
+let selection_container = $("<div></div>")
+selection_container.css({
+    'border': '1px solid #003eff', 'border-radius' : '0px 0px 3px 3px',
+    'background': '#007fff', 'color': '#fff', 
+    'font-weight': 'normal', 'font-size': '100%', 'font-family' : 'Arial,Helvetica,sans-serif',
+    'padding' : '.5em .5em .5em .7em',
+
+})
 let user_select = define_new_user_select_field('user_select', 'Select User', function(selected_user) {
     $('#eff_perms').attr('username', selected_user)
 })
-$('#sidepanel').append(user_select)
-effective_perms.hide();
-user_select.hide();
+let file_select = define_new_file_select_field('file_select', 'Select File', function(selected_file) {
+    $('#eff_perms').attr('filepath', selected_file)
+})
+selection_container.append(user_select)
+selection_container.append(file_select)
+$('#sidepanel').append(selection_container)
+$('#eff_perms').css({
+    'padding': '10px 0px',
+})
+effective_perms.show();
+user_select.show();
+
 
 
 // Update the effective permissions when OK button is clicked
@@ -273,40 +294,46 @@ $('#perm-dialog-ok-button').click(function() {
 })
 
 
-
 // Modify file that the effective permissions sidebar points to
-$('.file').click(function(event) {
-    let filepath = $(this).attr('id').replace('_div', '');
-    $('#eff_perms').attr('filepath', filepath);
-    $('.file').removeClass('selected')
-    $(this).addClass('selected')
-    $('#eff_perms').show();
-    user_select.show()
-    console.log(filepath);
-    event.stopPropagation();
-})
+// $('.file').click(function(event) {
+//     let filepath = $(this).attr('id').replace('_div', '');
+//     $('#eff_perms').attr('filepath', filepath);
+//     $('.file').removeClass('selected')
+//     $(this).addClass('selected')
+//     $('#eff_perms').show();
+//     user_select.show()
+//     console.log(filepath);
+//     event.stopPropagation();
+// })
 
-// Un-highlight selected file
-$(document).click(function(event) {
-    if ($(event.target).is('body') || $(event.target).is('html')) {
-        $('.file').removeClass('selected')
-        $('#eff_perms').hide();
-        user_select.hide();
-        $('#eff_perms').removeAttr('filepath');
-    }
-});
-
-
+// // Un-highlight selected file
+// $(document).click(function(event) {
+//     if ($(event.target).is('body') || $(event.target).is('html')) {
+//         $('.file').removeClass('selected')
+//         $('#eff_perms').hide();
+//         user_select.hide();
+//         $('#eff_perms').removeAttr('filepath');
+//     }
+// });
 
 let dialog = define_new_dialog('explanation_dialog', 'Permission Explanation')
 
 $('.perm_info').click(function(){
     let filePath = $('#eff_perms').attr('filepath')
     let username = $('#eff_perms').attr('username')
-    if (username == null || filePath == null) {
+    if (username == null && filePath == null) {
+        dialog.dialog('open')
+        dialog.text('Please select a user and file first')
+    }
+    else if (username == null) {
         dialog.dialog('open')
         dialog.text('Please select a user first')
-    } else {
+    } 
+    else if (filePath == null) {
+        dialog.dialog('open')
+        dialog.text('Please select a file first')
+    }
+    else {
         let permName = $(this).attr('permission_name')
         let file_obj = path_to_file[filePath]
         let user_obj = all_users[username]

@@ -585,7 +585,7 @@ function open_user_select_dialog(to_populate_id) {
 function define_new_user_select_field(id_prefix, select_button_text, on_user_change = function(selected_user){}){
     // Make the element:
     let sel_section = $(`<div id="${id_prefix}_line" class="section">
-            <span id="${id_prefix}_field" class="ui-widget-content" style="width: 80%;display: inline-block;">&nbsp</span>
+            <span id="${id_prefix}_field" class="ui-widget-content" style="min-width: fit-content;width: 30%;display: inline-block; padding: 5px 5px;">&nbsp</span>
             <button id="${id_prefix}_button" class="ui-button ui-widget ui-corner-all">${select_button_text}</button>
         </div>`)
 
@@ -652,3 +652,113 @@ $('#filestructure').css({
     'vertical-align': 'top'
 })
 $('#filestructure').after('<div id="sidepanel" style="display:inline-block;width:49%"></div>')
+
+
+
+
+
+
+
+
+// ---------- Bean, MANUAL FXNS ------------------- //
+
+function make_file_elem(id_prefix, fname, file_attributes=null) {    
+    file_elem = $(`<div class="ui-widget-content" id="${id_prefix}_${fname}" name="${fname}">
+        <span id="${id_prefix}_${fname}_icon" class="oi ${(path_to_file[fname].is_folder)?'oi-folder':'oi-file'}"/> 
+        <span id="${id_prefix}_${fname}_text">${path_to_file[fname].filename} </span>
+    </div>`)
+
+    if (file_attributes) {
+        // if we need to add the user's attributes: go through the properties for that user and add each as an attribute to user_elem.
+        for(fprop in file_attributes) {
+            file_elem.attr(fprop, file_attributes[fprop])
+        }
+    }
+
+    return file_elem
+}
+
+function make_file_list(id_prefix, filemap, add_attributes = false) {
+    let f_elements = []
+    for(let root_file of root_files) {
+        let file_hash = get_full_path(root_file)
+        console.log("root file: " + file_hash)    
+    }
+    console.log("filemap: " + filemap)
+    for(fname in filemap){
+        console.log("fname: " + fname)
+        // make user element; if add_attributes is true, pass along usermap[uname] for attribute creation.
+        file_elem = make_file_elem(id_prefix, fname, add_attributes ? filemap[fname] : null )
+        f_elements.push(file_elem)
+    }
+    return f_elements
+}
+
+all_files_selectlist = define_single_select_list('file_select_list')
+all_file_elements = make_file_list('file_select', path_to_file)
+all_files_selectlist.append(all_file_elements)
+
+file_select_dialog = define_new_dialog('file_select_dialog2', 'Select File', {
+    buttons: {
+        Cancel: {
+            text: "Cancel",
+            id: "file_select_cancel_button",
+            click: function() {
+                $( this ).dialog( "close" );
+            },
+        },
+        OK: {
+            text: "OK",
+            id: "file_select_ok_button",
+            click: function() {
+                // When "OK" is clicked, we want to populate some other element with the selected user name 
+                //(to pass along the selection information to whoever opened this dialog)
+                let to_populate_id = $(this).attr('to_populate') // which field do we need to populate?
+                // console.log("populate id " + to_populate_id);
+                let selected_value = all_files_selectlist.attr('selected_item') // what is the user name that was selected?
+                // console.log("selected item " + selected_value);
+                $(`#${to_populate_id}`).attr('selected_file', selected_value) // populate the element with the id
+                $( this ).dialog( "close" );
+            }
+        }
+    }
+})
+file_select_dialog.append(all_files_selectlist)
+
+function open_file_select_dialog(to_populate_id) {
+    // TODO: reset selected user?..
+
+    file_select_dialog.attr('to_populate', to_populate_id)
+    file_select_dialog.dialog('open')
+}
+
+function define_new_file_select_field(id_prefix, select_button_text, on_file_change = function(selected_file){}){
+    // Make the element:
+    let sel_section = $(`<div id="${id_prefix}_line" class="section">
+            <span id="${id_prefix}_field" class="ui-widget-content" style="min-width: fit-content;width: 30%;display: inline-block; padding: 5px 5px;">&nbsp</span>
+            <button id="${id_prefix}_button" class="ui-button ui-widget ui-corner-all">${select_button_text}</button>
+        </div>`)
+
+    // Open user select on button click:
+    sel_section.find(`#${id_prefix}_button`).click(function(){
+        open_file_select_dialog(`${id_prefix}_field`)
+    })
+
+    // Set up an observer to watch the attribute change and change the field
+    let field_selector = sel_section.find(`#${id_prefix}_field`)
+    define_attribute_observer(field_selector, 'selected_file', function(new_filename){
+        field_selector.text(new_filename)
+        // call the function for additional processing of user change:
+        on_file_change(new_filename)
+    })
+
+    return sel_section
+}
+
+
+
+
+
+
+
+
