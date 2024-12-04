@@ -166,9 +166,20 @@ perm_dialog.append($('<div id="permissions_user_title">Group or user names:</div
 perm_dialog.append(file_permission_users)
 perm_dialog.append(perm_add_user_select)
 perm_add_user_select.append(perm_remove_user_button) // Cheating a bit again - add the remove button the the 'add user select' div, just so it shows up on the same line.
+// Dynamically append the reminder box for permissions edit instructions
+let permissionReminderBox = $('<div>', {
+    id: 'permission_reminder_box',
+    style: 'margin-top: 20px; padding: 10px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px;'
+}).append(
+    $('<h4>').text('How to Edit Permissions'),
+    $('<p>').text('To change the permissions for any user or group, click on the name of the user or group in the list above: the checkboxes will become editable once you select a user or group.')
+);
+
+// Append the reminder box after the permissions
+perm_dialog.append(permissionReminderBox);
 perm_dialog.append(grouped_permissions)
+perm_dialog.append('<br />')
 perm_dialog.append(advanced_expl_div)
-// perm_dialog.append('<br />')
 perm_dialog.append(adv_perm_inheritance_div)
 perm_dialog.append(adv_perm_replace_child_div)
 
@@ -610,7 +621,6 @@ perm_entry_user_observer = new MutationObserver(function(mutationsList, observer
 })
 
 perm_entry_user_observer.observe(document.getElementById('perm_entry_username'), {attributes: true})
-
 
 
 // --- add pre- and post- dialogs ---
