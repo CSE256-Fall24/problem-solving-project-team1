@@ -172,7 +172,7 @@ let permissionReminderBox = $('<div>', {
     style: 'margin-top: 20px; padding: 10px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px;'
 }).append(
     $('<h4>').text('How to Edit Permissions'),
-    $('<p>').text('To change the permissions for any user or group, click on the name of the user or group in the list above: the checkboxes will become editable once you select a user or group.')
+    $('<p>').text('To change the permissions for any user or group, click on the name of the user/group in the list above: the checkboxes will become editable once you select a user or group. If the checkbox is grey, then the user/group inherited permission from parent')
 );
 
 // Append the reminder box after the permissions
