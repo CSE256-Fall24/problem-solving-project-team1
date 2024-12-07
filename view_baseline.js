@@ -414,19 +414,19 @@ $('#adv_perm_inheritance').change(function(){
                         $( this ).dialog( "close" );
                     },
                 },
-                Remove: {
-                    text: "Remove",
-                    id: "adv-inheritance-remove-button",
-                    click: function() {
-                        let filepath = $('#permdialog').attr('filepath')
-                        let file_obj = path_to_file[filepath]
-                        file_obj.using_permission_inheritance = false
-                        emitState()
-                        // open_advanced_dialog(filepath) // reload/reopen 'advanced' dialog
-                        perm_dialog.attr('filepath', filepath) // force reload 'permissions' dialog
-                        $( this ).dialog( "close" );
-                    },
-                },
+                // Remove: {
+                //     text: "Remove",
+                //     id: "adv-inheritance-remove-button",
+                //     click: function() {
+                //         let filepath = $('#permdialog').attr('filepath')
+                //         let file_obj = path_to_file[filepath]
+                //         file_obj.using_permission_inheritance = false
+                //         emitState()
+                //         // open_advanced_dialog(filepath) // reload/reopen 'advanced' dialog
+                //         perm_dialog.attr('filepath', filepath) // force reload 'permissions' dialog
+                //         $( this ).dialog( "close" );
+                //     },
+                // },
                 Cancel: {
                     text: "Cancel",
                     id: "adv-inheritance-cancel-button",
