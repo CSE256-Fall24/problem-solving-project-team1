@@ -4,19 +4,16 @@
     color: black;
 }
 
-.file:hover {
-    color: lightblue; /* Hover color */
-}
-
 /* Hover color only applies when .selected is NOT present */
+/* .file:hover {
+    color: lightblue;
+}
 .file:not(.selected):hover {
     color: lightblue;
 }
-
-/* Clicked state color */
 .file.selected {
-    color: blue; /* Or your desired color for clicked files */
-}
+    color: blue;
+} */
 
 .section {
     margin-bottom: 5px;
@@ -61,3 +58,60 @@
     cursor: pointer;
     margin-top: 30px; 
   }
+
+
+
+#wlk-thru-heading {
+    margin: 10px 10px 5px 15px;
+}
+
+.wlk-thru-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 1.2em;
+}
+
+.wlk-thru-section {
+    width: 50%;
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+.wlk-thru-dropdown {
+    margin: 5px 0;
+    padding: 8px;
+    width: auto;
+    border-color: #007fff;
+    color: #007fff;
+    &:focus-visible {
+        outline-color: #007fff;
+    }
+}
+
+.wlk-thru-submit-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #007fff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+.wlk-thru-submit-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.wlk-thru-right-section ol, .wlk-thru-right-section ul {
+    list-style-position: inside;
+    padding-left: 5px;
+    li::marker {
+        color: #007fff;
+    }
+}
+
+#wlk-thru-Content p {
+    margin-top: 8px;
+}

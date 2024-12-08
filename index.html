@@ -104,15 +104,16 @@
                     </table>
                 </div>
                 <!-- structure for the Advanced dialog: -->
-                <div title="Advanced Security Settings" id="advdialog" style="overflow:hidden">
+                 <!-- DELETED OWNER TAB -->
+                <div title="Advanced Security Settings" id="advdialog" style="overflow:hidden; min-height: fit-content;">
                     <div id="advtabs">
                         <ul id="advtabs_titles">
                             <li id="advtab_title_permissions"><a href="#adv_permissions_tab"
                                     id="adv_permissions_tab_elem">Permissions</a></li>
-                            <li id="advtab_title_owner"><a href="#adv_owner_tab" id="adv_owner_tab_elem">Owner</a></li>
+                            <!-- <li id="advtab_title_owner"><a href="#adv_owner_tab" id="adv_owner_tab_elem">Owner</a></li> -->
                         </ul>
-                        <div id="adv_permissions_tab">
-                            <div id="adv_perm_object_name" class="section">Object Name: <span
+                        <div id="adv_permissions_tab" style="min-height: fit-content;">
+                            <div id="adv_perm_object_name" class="section">Item Name: <span
                                     id="adv_perm_filepath"></span></div>
                             <div id="adv_perm_entries_text">Permission entries:</div>
                             <div id="adv_perm_table_container" style="height:100px;overflow-y:scroll"
@@ -127,7 +128,7 @@
                                 </table>
                             </div>
                             <button id="adv_perm_edit" class="ui-button ui-widget ui-corner-all">Edit...</button>
-                            <div id="adv_perm_inheritance_div">
+                            <!-- <div id="adv_perm_inheritance_div">
                                 <input type="checkbox" id="adv_perm_inheritance" name="inherit">
                                 <label for="adv_perm_inheritance" id="adv_perm_inheritance_label">Inherit permission from parent</label>
                             </div>
@@ -135,12 +136,12 @@
                                 <input type="checkbox" id="adv_perm_replace_child_permissions" name="replace_child">
                                 <label for="adv_perm_replace_child_permissions"
                                     id="adv_perm_replace_child_permissions_label">Give child(ren) current permission</label>
-                            </div>
+                            </div> -->
                         </div>
-                        <div id="adv_owner_tab">
+                        <!-- <div id="adv_owner_tab">
                             <div id="adv_owner_explanation" class="section">You can take or assign ownership of this
-                                object if you have the required permissions or privileges.</div>
-                            <div id="adv_owner_object_name" class="section">Object Name: <span
+                                item if you have the required permissions or privileges.</div>
+                            <div id="adv_owner_object_name" class="section">Item Name: <span
                                     id="adv_owner_filepath"></span></div>
                             <div id="adv_owner_current_owner_text">Current owner:</div>
                             <div id="adv_owner_current_owner" class="ui-widget-content section"></div>
@@ -148,9 +149,9 @@
                             <div id="adv_owner_user_list"></div>
                             <button id="adv_owner_change_button" class="ui-button ui-widget ui-corner-all">Change
                                 Owner</button>
-                        </div>
-                        <div id="adv_effective_tab">
-                            <div id="adv_effective_object_name" class="section">Object Name: <span
+                        </div> -->
+                        <div id="adv_effective_tab" style="display: none;">
+                            <div id="adv_effective_object_name" class="section">Item Name: <span
                                     id="adv_effective_filepath"></span></div>
                             <div id="adv_effective_user_text">Group or user name:</div>
                             <div id="adv_effective_current_user_line" class="section">

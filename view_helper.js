@@ -154,6 +154,7 @@ function define_new_effective_permissions(id_prefix, add_info_col = false, which
     if(which_permissions === null) {
         which_permissions = Object.values(permissions)
     }
+    console.log("Which permissions:", which_permissions)
     // add a row for each permission:
     for(let p of which_permissions) {
         let p_id = p.replace(/[ \/]/g, '_') //get jquery-readable id
@@ -188,6 +189,7 @@ function define_new_effective_permissions(id_prefix, add_info_col = false, which
             for(let p of which_permissions) {
                 let p_id = p.replace(/[ \/]/g, '_') //get jquery-readable id
                 // if the actual model would allow an action with permission
+                console.log(allow_user_action(path_to_file[filepath], all_users[username], p), " Allow user action for ", p)
                 if( allow_user_action(path_to_file[filepath], all_users[username], p)) {
                     // This action is allowed. Find the checkbox cell and put a checkbox there.
                     let this_checkcell = effective_container.find(`#${id_prefix}_checkcell_${p_id}`)
@@ -200,6 +202,108 @@ function define_new_effective_permissions(id_prefix, add_info_col = false, which
     // call update_effective_contents when either username or filepath changes:
     define_attribute_observer(effective_container, 'username', update_effective_contents)
     define_attribute_observer(effective_container, 'filepath', update_effective_contents)
+    
+    return effective_container
+}
+
+
+function collect_permissions(collected_pid, filename, username) {
+    let relevant_specific_permissions = []
+    switch(collected_pid) {
+        case 'Read Execute':
+        case 'Read_Execute':
+            relevant_specific_permissions.push(...['traverse folder/execute file'])
+        case 'Read':
+            relevant_specific_permissions.push(...['read attributes','read extended attributes','list folder/read contents','read permissions'])
+            break
+
+
+        case 'Modify':
+            relevant_specific_permissions.push(...['delete subfolders and files','delete'])
+        case 'Write':
+            relevant_specific_permissions.push(...['create files/write data','create folders/append data','write attributes','write extended attributes'])
+            break
+        case 'Full Control':
+        case 'Full_Control':
+            relevant_specific_permissions.push(...['traverse folder/execute file', 'list folder/read contents', 'read attributes', 'read extended attributes', 'create files/write data', 'create folders/append data', 'write attributes', 'write extended attributes', 'delete subfolders and files', 'delete', 'read permissions', 'change permissions', 'take ownership'])
+            break
+        // case 'Special Permissions':
+        // case 'Special_Permissions':
+        //     break
+        default:
+            console.log(`Unknown collected permission type: ${collected_pid}`)
+            break
+    }
+    // console.log("Relevant specific permissions:", relevant_specific_permissions)
+    // relevant_specific_permissions = relevant_specific_permissions.map(permission => permission.replace(/[ \/]/g, '_'));
+    for(let p of relevant_specific_permissions) {
+        if(!allow_user_action(filename, username, p)){
+            // console.log("user" + username + " does not have permission " + p + " on " + filename)
+            // console.log(filename)
+            return false
+        }
+    }
+    return true
+
+}
+
+function define_new_collected_permissions(id_prefix, add_info_col = true){
+    // Set up the table:
+    let effective_container = $(`<div id="${id_prefix}" class="ui-widget-content" style="overflow-y:scroll"></div>`)
+    // let collected_permissions = ['Read', 'Write', 'Read Execute', 'Modify', 'Full Control', 'Special Permissions']
+    let collected_permissions = ['Read', 'Write', 'Read Execute', 'Modify', 'Full Control']
+    // add a row for each permission:
+    for(let p of collected_permissions) {
+        let p_id = p.replace(/[ \/]/g, '_') //get jquery-readable id
+        let row = $(`
+        <tr id="${id_prefix}_row_${p_id}" permission_name="${p}" permission_id="${p_id}">
+            <td id="${id_prefix}_checkcell_${p_id}" class="effectivecheckcell" width="16px"></td>
+            <td id="${id_prefix}_name_${p_id}" class="effective_perm_name grouped_perms_row" permission_name="${p}">${p}</td>
+        </tr>
+        `)
+        // If we want to add an additional info column (which does nothing by default)
+        if(add_info_col) {
+            row.append(`
+            <td id="${id_prefix}_${p_id}_info_cell" width="32px" style="text-align:right">
+                <span id="${id_prefix}_${p_id}_info_icon" class="fa fa-info-circle perm_info" permission_name="${p}" setting_container_id="${id_prefix}"/>
+            </td>`)
+        }
+        effective_container.append(row)
+    }
+    // Define how to update contents on attribute change:
+    let update_collected_contents = function(){
+        // get current settings:
+        let username = effective_container.attr('username')
+        let filepath = effective_container.attr('filepath')
+        // if both properties are set correctly:
+        if( username && username.length > 0 && (username in all_users) &&
+            filepath && filepath.length > 0 && (filepath in path_to_file)) {
+            //clear out the checkboxes:
+            effective_container.find(`.effectivecheckcell`).empty()
+            // Set checkboxes correctly for given file and user:
+            // console.log("Collected permissions is ", collected_permissions)
+            for(let p of collected_permissions) {
+                // console.log("Testing for permission ", p)
+                let p_id = p.replace(/[ \/]/g, '_') //get jquery-readable id
+                // if the actual model would allow an action with permission
+                // TODO: Modify this for collected allow_user_action
+                // if( allow_user_action(path_to_file[filepath], all_users[username], p)) {
+                //     // This action is allowed. Find the checkbox cell and put a checkbox there.
+                //     let this_checkcell = effective_container.find(`#${id_prefix}_checkcell_${p_id}`)
+                //     this_checkcell.append(`<span id="${id_prefix}_checkbox_${p_id}" class="oi oi-check"/>`)
+                // }
+                // console.log("Allow user action for ", p, 'is ', collect_permissions(p_id, path_to_file[filepath], all_users[username]))
+                if(collect_permissions(p_id, path_to_file[filepath], all_users[username])) {
+                    let this_checkcell = effective_container.find(`#${id_prefix}_checkcell_${p_id}`)
+                    this_checkcell.append(`<span id="${id_prefix}_checkbox_${p_id}" class="oi oi-check"/>`)
+                }
+            }
+        }
+    }
+
+    // call update_effective_contents when either username or filepath changes:
+    define_attribute_observer(effective_container, 'username', update_collected_contents)
+    define_attribute_observer(effective_container, 'filepath', update_collected_contents)
     
     return effective_container
 }
@@ -481,7 +585,7 @@ function open_user_select_dialog(to_populate_id) {
 function define_new_user_select_field(id_prefix, select_button_text, on_user_change = function(selected_user){}){
     // Make the element:
     let sel_section = $(`<div id="${id_prefix}_line" class="section">
-            <span id="${id_prefix}_field" class="ui-widget-content" style="width: 80%;display: inline-block;">&nbsp</span>
+            <span id="${id_prefix}_field" class="ui-widget-content" style="min-width: fit-content;width: 30%;display: inline-block; padding: 5px 5px;">&nbsp</span>
             <button id="${id_prefix}_button" class="ui-button ui-widget ui-corner-all">${select_button_text}</button>
         </div>`)
 
@@ -516,7 +620,7 @@ function get_explanation_text(explanation) {
 
 
 function extractPermission(text) {
-    return text.replace(/^permdialog_grouped_permissions_/, '').replace(/_name$/, '').replace(/_/g, ' ');
+    return text.replace(/^permdialog_grouped_permissions_/, '').replace(/_name$/, '').replace(/_/g, ' ').replace("eff perms name ", "");
 }
 
 function getPermDesc(perm) {
@@ -530,6 +634,7 @@ function getPermDesc(perm) {
         case 'Modify':
             return 'Allows users to read, write, and delete files. With modify permissions, a user has more control, as they can make and remove changes, but it’s still more restricted than full control.'
         case 'Full control':
+        case 'Full Control':
             return 'Provides complete access to the file or folder. Users with full control can read, modify, delete, and change permissions for others, making it the most powerful permission level.'
         case 'Special permissions':
             return 'This is kind of a catch-all: if the permission settings for a given file & user can\'t be described by the 5 categories above then "Special Permissions" is also checked on screens which use these categories.'
@@ -547,3 +652,113 @@ $('#filestructure').css({
     'vertical-align': 'top'
 })
 $('#filestructure').after('<div id="sidepanel" style="display:inline-block;width:49%"></div>')
+
+
+
+
+
+
+
+
+// ---------- Bean, MANUAL FXNS ------------------- //
+
+function make_file_elem(id_prefix, fname, file_attributes=null) {    
+    file_elem = $(`<div class="ui-widget-content" id="${id_prefix}_${fname}" name="${fname}">
+        <span id="${id_prefix}_${fname}_icon" class="oi ${(path_to_file[fname].is_folder)?'oi-folder':'oi-file'}"/> 
+        <span id="${id_prefix}_${fname}_text">${path_to_file[fname].filename} </span>
+    </div>`)
+
+    if (file_attributes) {
+        // if we need to add the user's attributes: go through the properties for that user and add each as an attribute to user_elem.
+        for(fprop in file_attributes) {
+            file_elem.attr(fprop, file_attributes[fprop])
+        }
+    }
+
+    return file_elem
+}
+
+function make_file_list(id_prefix, filemap, add_attributes = false) {
+    let f_elements = []
+    for(let root_file of root_files) {
+        let file_hash = get_full_path(root_file)
+        console.log("root file: " + file_hash)    
+    }
+    console.log("filemap: " + filemap)
+    for(fname in filemap){
+        console.log("fname: " + fname)
+        // make user element; if add_attributes is true, pass along usermap[uname] for attribute creation.
+        file_elem = make_file_elem(id_prefix, fname, add_attributes ? filemap[fname] : null )
+        f_elements.push(file_elem)
+    }
+    return f_elements
+}
+
+all_files_selectlist = define_single_select_list('file_select_list')
+all_file_elements = make_file_list('file_select', path_to_file)
+all_files_selectlist.append(all_file_elements)
+
+file_select_dialog = define_new_dialog('file_select_dialog2', 'Select File', {
+    buttons: {
+        Cancel: {
+            text: "Cancel",
+            id: "file_select_cancel_button",
+            click: function() {
+                $( this ).dialog( "close" );
+            },
+        },
+        OK: {
+            text: "OK",
+            id: "file_select_ok_button",
+            click: function() {
+                // When "OK" is clicked, we want to populate some other element with the selected user name 
+                //(to pass along the selection information to whoever opened this dialog)
+                let to_populate_id = $(this).attr('to_populate') // which field do we need to populate?
+                // console.log("populate id " + to_populate_id);
+                let selected_value = all_files_selectlist.attr('selected_item') // what is the user name that was selected?
+                // console.log("selected item " + selected_value);
+                $(`#${to_populate_id}`).attr('selected_file', selected_value) // populate the element with the id
+                $( this ).dialog( "close" );
+            }
+        }
+    }
+})
+file_select_dialog.append(all_files_selectlist)
+
+function open_file_select_dialog(to_populate_id) {
+    // TODO: reset selected user?..
+
+    file_select_dialog.attr('to_populate', to_populate_id)
+    file_select_dialog.dialog('open')
+}
+
+function define_new_file_select_field(id_prefix, select_button_text, on_file_change = function(selected_file){}){
+    // Make the element:
+    let sel_section = $(`<div id="${id_prefix}_line" class="section">
+            <span id="${id_prefix}_field" class="ui-widget-content" style="min-width: fit-content;width: 30%;display: inline-block; padding: 5px 5px;">&nbsp</span>
+            <button id="${id_prefix}_button" class="ui-button ui-widget ui-corner-all">${select_button_text}</button>
+        </div>`)
+
+    // Open user select on button click:
+    sel_section.find(`#${id_prefix}_button`).click(function(){
+        open_file_select_dialog(`${id_prefix}_field`)
+    })
+
+    // Set up an observer to watch the attribute change and change the field
+    let field_selector = sel_section.find(`#${id_prefix}_field`)
+    define_attribute_observer(field_selector, 'selected_file', function(new_filename){
+        field_selector.text(new_filename)
+        // call the function for additional processing of user change:
+        on_file_change(new_filename)
+    })
+
+    return sel_section
+}
+
+
+
+
+
+
+
+
