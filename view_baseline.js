@@ -354,18 +354,19 @@ $('#adv_perm_inheritance').change(function(){
     else {
         // has just been turned off - pop up dialog with add/remove/cancel
         $(`<div id="add_remove_cancel" title="Security">
-            Warning: if you proceed, inheritable permissions will no longer propagate to this object.<br/>
-            - Click Add to convert and add inherited parent permissions as explicit permissions on this object<br/>
-            - Click Remove to remove inherited parent permissions from this object<br/>
-            - Click Cancel if you do not want to modify inheritance settings at this time.<br/>
+            <strong>Warning</strong>: You're removing inheritance from this file. Please specify whether you want to <strong>preserve</strong> or <strong>remove</strong> the permissions that are currently inherited from the parent.<br/>
+            <br/>
+            - <strong>Preserve Inherited Permissions</strong>: turns off inheritance, but adds the permissions inherited from the parent directly to this file. <br/>
+            - <strong>Remove Inherited Permissions</strong>: turns off inheritance and removes permissions inherited from parent. <br/>
+          <br/>
         </div>`).dialog({ // TODO: don't create this dialog on the fly
             modal: true,
-            width: 400,
+            width: 600,
             appendTo: "#html-loc",
             position: { my: "top", at: "top", of: $('#html-loc') },
             buttons: {
                 Add: {
-                    text: "Add",
+                    text: "Preserve",
                     id: "adv-inheritance-add-button",
                     click: function() {
                         let filepath = $('#advdialog').attr('filepath')
